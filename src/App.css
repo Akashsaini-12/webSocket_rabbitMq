@@ -1,0 +1,85 @@
+/* Add to ChatInterface.css */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding: 20px;
+}
+
+.login-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
+  color: #2196F3;
+}
+
+.login-header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.user-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.user-select-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  border: 2px solid #e1e1e1;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.user-select-button:hover {
+  border-color: #2196F3;
+  background: #f5f5f5;
+}
+
+.user-select-button.selected {
+  border-color: #2196F3;
+  background: #e3f2fd;
+  color: #2196F3;
+}
+
+.login-button {
+  width: 100%;
+  padding: 15px;
+  background: #2196F3;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.login-button:hover {
+  background: #1976D2;
+}
+
+.login-error {
+  color: #f44336;
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
