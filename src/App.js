@@ -69,7 +69,7 @@ const App = () => {
   return (
     <ChatInterface
       currentUserId={currentUser.id}
-      url="ws://localhost:15674/ws"
+      url="ws://lhttps://rabbitmq-3-management-xqn4.onrender.com/ws"
       vhost="/"
       login="myuser"
       passcode="mypassword"

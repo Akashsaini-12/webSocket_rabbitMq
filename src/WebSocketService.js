@@ -1,12 +1,17 @@
 class WebSocketService {
     constructor(url, messageHandler, options = {}) {
+        // this.url = url;
+        // this.messageHandler = messageHandler;
+        // this.ws = null;
+        // this.isConnecting = false;
+        // this.reconnectTimeout = null;
+        // this.isDisconnected = true;
+        // this.reconnectInterval = options.reconnectInterval || 3000;
         this.url = url;
         this.messageHandler = messageHandler;
         this.ws = null;
-        this.isConnecting = false;
-        this.reconnectTimeout = null;
-        this.isDisconnected = true;
-        this.reconnectInterval = options.reconnectInterval || 3000;
+        this.reconnectAttempts = 0;
+
     }
 
     connect() {
