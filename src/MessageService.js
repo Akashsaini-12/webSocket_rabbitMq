@@ -16,10 +16,12 @@ class MessageService {
         routingKey,
         groupRoutingKeys,
         exchangeName = "ex_common",
+        dbExchangeName = "db_ex", // Add database exchange name
         routingKeys = [],
         onConnect,
         onError,
-        onMessage
+        onMessage,
+        onTypingStatus
     }) {
         this.publishQueue = publishQueue;
         this.userId = userId;
@@ -31,7 +33,8 @@ class MessageService {
         this.onConnect = onConnect;
         this.onError = onError;
         this.onMessage = onMessage;
-
+        this.dbExchangeName = dbExchangeName; // Store database exchange name
+        this.onTypingStatus = onTypingStatus;
         try {
             this.stompClient = new StompService(url, this.messageHandler.bind(this), {
                 vhost,
@@ -76,10 +79,18 @@ class MessageService {
                 try {
                     const cleanBody = payload.body.replace(/\u0000/g, "").trim();
                     const messageData = JSON.parse(cleanBody);
-
-                    if (this.onMessage) {
-                        this.onMessage(messageData);
+                    if (messageData.type === "TYPING_STATUS") {
+                        if (this.onTypingStatus) {
+                            this.onTypingStatus(messageData);
+                        }
+                    } else {
+                        if (this.onMessage) {
+                            this.onMessage(messageData);
+                        }
                     }
+                    // if (this.onMessage) {
+                    //     this.onMessage(messageData);
+                    // }
                 } catch (err) {
                     console.error("Error parsing message body:", err);
                 }
@@ -113,6 +124,12 @@ class MessageService {
                 messageString
             );
 
+            // Send to database exchange for persistence
+            this.stompClient.publishMessage(
+                `/exchange/${this.dbExchangeName}/db.message.save`,
+                messageString
+            );
+
             return true;
         } catch (error) {
             console.error("Failed to publish message:", error);
@@ -122,6 +139,34 @@ class MessageService {
             return false;
         }
     }
+
+    publishTypingStatus(isTyping, toUserId) {
+        if (!this.stompClient?.connected) {
+            throw new Error("Not connected to the message broker");
+        }
+
+        try {
+            const typingMessage = {
+                type: "TYPING_STATUS",
+                from: this.userId,
+                to: toUserId,
+                isTyping: isTyping,
+                timestamp: Date.now()
+            };
+
+            const routingKey = `chat.user.${toUserId}`;
+            this.stompClient.publishMessage(
+                `/exchange/${this.publishQueue}/${routingKey}`,
+                JSON.stringify(typingMessage)
+            );
+        } catch (error) {
+            console.error("Failed to publish typing status:", error);
+            if (this.onError) {
+                this.onError(error);
+            }
+        }
+    }
+
 
     disconnect() {
         if (this.stompClient) {

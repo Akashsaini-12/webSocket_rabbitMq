@@ -5,9 +5,9 @@ import { MessageCircle, User } from 'lucide-react';
 import ChatInterface from './ChatInterface';
 
 const USERS = [
-  { id: "user1", name: "User 1" },
-  { id: "user2", name: "User 2" },
-  { id: "user3", name: "User 3" }
+  { id: "1024", name: "User 1" },
+  { id: "1025", name: "User 2" },
+  { id: "1026", name: "User 3" }
 ];
 
 const LoginScreen = ({ onLogin }) => {
