@@ -4,7 +4,9 @@ import { saveAs } from "file-saver";
 
 const ApiDataModal = ({ isOpen = false, onClose }) => { // Default value for isOpen
     const [data, setData] = useState([]);
+    const [lastRefresh, setLastRefresh] = useState(null);
     const apiUrl = "https://api.bdg88zf.com/api/webapi/GetNoaverageEmerdList";
+    const backendUrl = "https://rabbitmq-backend-xbwi-git-main-akashsaini-12s-projects.vercel.app/api/store-api-data"; // Your backend API endpoint
 
     const fetchData = async () => {
         try {
@@ -26,7 +28,27 @@ const ApiDataModal = ({ isOpen = false, onClose }) => { // Default value for isO
 
             const result = await response.json();
             if (result.data && result.data.list) {
-                setData((prevData) => [...prevData, ...result.data.list]); // Append new data
+                console.log(result.data.list[0], 'kk')
+                setData(result.data.list); // Replace data instead of appending
+                setLastRefresh(new Date().toLocaleTimeString());
+
+                // Store data in MongoDB through our backend
+                console.log(result.data.list[0])
+                try {
+                    const storeResponse = await fetch(backendUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(result.data.list[0])
+                    });
+                    console.log(storeResponse, 'storeResponse')
+                    if (!storeResponse.ok) {
+                        console.error('Failed to store data in MongoDB');
+                    }
+                } catch (error) {
+                    console.error('Error storing data in MongoDB:', error);
+                }
             }
         } catch (error) {
             console.error("API Fetch Error:", error);
@@ -35,7 +57,7 @@ const ApiDataModal = ({ isOpen = false, onClose }) => { // Default value for isO
 
     useEffect(() => {
         fetchData(); // Initial API Call
-        const interval = setInterval(fetchData, 30000); // Call API every 30 sec
+        const interval = setInterval(fetchData, 27000); // Call API every 30 sec
 
         return () => clearInterval(interval);
     }, []);
@@ -55,8 +77,12 @@ const ApiDataModal = ({ isOpen = false, onClose }) => { // Default value for isO
         <div style={modalStyles}>
             <div style={modalContentStyles}>
                 <h2>API Data Modal</h2>
+                <div style={{ marginBottom: '10px', color: '#666' }}>
+                    Last refreshed: {lastRefresh || 'Never'}
+                </div>
                 <button onClick={onClose} style={buttonStyle}>Close</button>
                 <button onClick={exportToExcel} style={buttonStyle}>Download Excel</button>
+                <button onClick={fetchData} style={buttonStyle}>Refresh Now</button>
 
                 <table border="1" cellPadding="5" style={tableStyle}>
                     <thead>
